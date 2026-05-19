@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aizen — Multi-Agent Workflow Skills</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+}
+
+.background{
+    position:fixed;
+    inset:0;
+    background:url('Aizen.jpg') right center/contain no-repeat;
+    filter:brightness(0.62) contrast(1.25);
+    transform:scale(1.02);
+    z-index:-3;
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:
+        linear-gradient(to right, rgba(0,0,0,.96) 0%, rgba(0,0,0,.78) 42%, rgba(0,0,0,.18) 100%),
+        linear-gradient(to bottom, rgba(0,0,0,.08), rgba(0,0,0,.9));
+    z-index:-2;
+}
+
+.noise{
+    position:fixed;
+    inset:0;
+    background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:70px 70px;
+    opacity:.2;
+    z-index:-1;
+    pointer-events:none;
+}
+
+nav{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:99;
+    height:76px;
+    padding:0 64px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:rgba(0,0,0,.3);
+    backdrop-filter:blur(16px);
+}
+
+.logo{
+    font-family:'Cinzel',serif;
+    font-size:22px;
+    letter-spacing:4px;
+    font-weight:900;
+}
+
+.nav-links{
+    display:flex;
+    gap:34px;
+}
+
+.nav-links a{
+    color:#cfcfcf;
+    text-decoration:none;
+    font-size:12px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    transition:.3s;
+}
+
+.nav-links a:hover{
+    color:#fff;
+}
+
+section{
+    position:relative;
+    z-index:2;
+}
+
+.hero{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    padding:130px 80px 70px;
+}
+
+.hero-content{
+    max-width:800px;
+}
+
+.tag{
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 22px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.045);
+    backdrop-filter:blur(14px);
+    margin-bottom:32px;
+    letter-spacing:5px;
+    font-size:12px;
+    text-transform:uppercase;
+    color:#d9d9d9;
+}
+
+.dot{
+    width:7px;
+    height:7px;
+    background:#fff;
+    border-radius:50%;
+    box-shadow:0 0 12px #fff;
+}
+
+h1{
+    font-family:'Cinzel',serif;
+    font-size:clamp(72px, 11vw, 160px);
+    line-height:.88;
+    letter-spacing:-5px;
+    margin-bottom:30px;
+    text-shadow:
+        0 0 18px rgba(255,255,255,.32),
+        0 0 40px rgba(255,255,255,.12);
+}
+
+.line{
+    width:360px;
+    height:1px;
+    background:rgba(255,255,255,.3);
+    margin-bottom:34px;
+    position:relative;
+}
+
+.line::after{
+    content:"";
+    position:absolute;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:white;
+    top:-4px;
+    left:70%;
+    box-shadow:0 0 14px white;
+}
+
+.subtitle{
+    font-size:22px;
+    color:#b7b7b7;
+    line-height:1.8;
+    max-width:740px;
+    margin-bottom:38px;
+}
+
+.hero-buttons{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    color:#fff;
+    text-decoration:none;
+    padding:15px 24px;
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.05);
+    backdrop-filter:blur(12px);
+    font-size:13px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    transition:.3s;
+    display:inline-block;
+}
+
+.btn:hover{
+    background:rgba(255,255,255,.13);
+    box-shadow:0 0 25px rgba(255,255,255,.18);
+    transform:translateY(-3px);
+}
+
+.container{
+    width:88%;
+    max-width:1180px;
+    margin:auto;
+}
+
+.section{
+    padding:100px 0;
+    background:rgba(0,0,0,.9);
+}
+
+.section.alt{
+    background:linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,.92));
+}
+
+.section-head{
+    margin-bottom:52px;
+}
+
+.kicker{
+    color:#aaa;
+    font-size:12px;
+    letter-spacing:5px;
+    text-transform:uppercase;
+    margin-bottom:14px;
+}
+
+.section-title{
+    font-family:'Cinzel',serif;
+    font-size:clamp(38px,5vw,72px);
+    line-height:1;
+    margin-bottom:18px;
+}
+
+.section-desc{
+    color:#aaa;
+    max-width:780px;
+    line-height:1.8;
+    font-size:18px;
+}
+
+.skills-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.skill-card{
+    min-height:260px;
+    padding:30px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.045);
+    backdrop-filter:blur(14px);
+    transition:.35s;
+    position:relative;
+    overflow:hidden;
+    text-decoration:none;
+    color:#fff;
+}
+
+.skill-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg, rgba(255,255,255,.16), transparent 45%);
+    opacity:0;
+    transition:.35s;
+}
+
+.skill-card:hover{
+    transform:translateY(-8px);
+    border-color:rgba(255,255,255,.35);
+    box-shadow:0 0 35px rgba(255,255,255,.08);
+}
+
+.skill-card:hover::before{
+    opacity:1;
+}
+
+.icon{
+    font-size:34px;
+    margin-bottom:22px;
+}
+
+.skill-card h3{
+    font-size:20px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:14px;
+}
+
+.skill-card p{
+    color:#aaa;
+    line-height:1.7;
+    font-size:15px;
+    margin-bottom:24px;
+}
+
+.card-action{
+    display:inline-block;
+    color:#fff;
+    font-size:12px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    border-bottom:1px solid rgba(255,255,255,.5);
+    padding-bottom:6px;
+}
+
+.workflow{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+}
+
+.agent{
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.04);
+    padding:28px;
+    min-height:220px;
+    transition:.3s;
+}
+
+.agent:hover{
+    transform:translateY(-6px);
+    background:rgba(255,255,255,.07);
+    border-color:rgba(255,255,255,.3);
+}
+
+.agent-number{
+    font-family:'Cinzel',serif;
+    color:#777;
+    font-size:26px;
+    margin-bottom:24px;
+}
+
+.agent h3{
+    font-size:18px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:14px;
+}
+
+.agent p{
+    color:#aaa;
+    line-height:1.7;
+    font-size:15px;
+}
+
+.structure-box{
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.045);
+    padding:34px;
+    overflow:auto;
+}
+
+.structure-box pre{
+    color:#d0d0d0;
+    line-height:1.8;
+    font-size:15px;
+}
+
+.footer{
+    padding:45px 80px;
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    color:#888;
+    font-size:12px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    border-top:1px solid rgba(255,255,255,.08);
+    background:#000;
+}
+
+@media(max-width:1000px){
+    nav{
+        padding:0 28px;
+    }
+
+    .nav-links{
+        display:none;
+    }
+
+    .hero{
+        padding:120px 28px 70px;
+    }
+
+    .background{
+        background:url('Aizen.jpg') center center/cover no-repeat;
+        filter:brightness(0.42) contrast(1.2);
+    }
+
+    .overlay{
+        background:
+            linear-gradient(to right, rgba(0,0,0,.9), rgba(0,0,0,.55)),
+            linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,.85));
+    }
+
+    .skills-grid,
+    .workflow{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:680px){
+    h1{
+        letter-spacing:-2px;
+    }
+
+    .subtitle{
+        font-size:17px;
+    }
+
+    .line{
+        width:240px;
+    }
+
+    .skills-grid,
+    .workflow{
+        grid-template-columns:1fr;
+    }
+
+    .footer{
+        padding:34px 28px;
+        flex-direction:column;
+        letter-spacing:3px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="background"></div>
+<div class="overlay"></div>
+<div class="noise"></div>
+
+<nav>
+    <div class="logo">AIZEN</div>
+
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#skills">Skills</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#structure">Repo</a>
+    </div>
+</nav>
+
+<section class="hero" id="home">
+    <div class="hero-content">
+
+        <div class="tag">
+            <div class="dot"></div>
+            Multi-Agent Workflow Skills
+        </div>
+
+        <h1>AIZEN</h1>
+
+        <div class="line"></div>
+
+        <p class="subtitle">
+            AIZEN is an open-source AI agent skills library for building
+            multi-agent workflow systems. Each skill lives inside the repository
+            as a reusable <strong>SKILL.md</strong> file that can be copied,
+            customized, or loaded into AI agents.
+        </p>
+
+        <div class="hero-buttons">
+            <a class="btn" href="#skills">Explore Skills →</a>
+            <a class="btn" href="https://github.com/ghostoftrade/Multi-Agent-Workflow" target="_blank">
+                View GitHub Repo
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<section class="section alt" id="skills">
+    <div class="container">
+
+        <div class="section-head">
+            <div class="kicker">Skills Repository</div>
+            <h2 class="section-title">Reusable Agent Skills</h2>
+            <p class="section-desc">
+                These are not just website cards. Each item points to a real skill file
+                inside the repository. Users can open the skill, copy the instructions,
+                and use it inside their own AI agent system.
+            </p>
+        </div>
+
+        <div class="skills-grid">
+
+            <a class="skill-card" href="https://github.com/ghostoftrade/Multi-Agent-Workflow/tree/main/skills/aizen" target="_blank">
+                <div class="icon">🧠</div>
+                <h3>Aizen Router</h3>
+                <p>The master skill that routes user requests to the right specialist agent inside the workflow.</p>
+                <span class="card-action">Open SKILL.md →</span>
+            </a>
+
+            <a class="skill-card" href="https://github.com/ghostoftrade/Multi-Agent-Workflow/tree/main/skills/crypto-market-agent" target="_blank">
+                <div class="icon">📈</div>
+                <h3>Crypto Market Agent</h3>
+                <p>Analyze market movement, sentiment, news, risk, opportunities, and crypto watchlists.</p>
+                <span class="card-action">Open SKILL.md →</span>
+            </a>
+
+            <a class="skill-card" href="https://github.com/ghostoftrade/Multi-Agent-Workflow/tree/main/skills/content-agent" target="_blank">
+                <div class="icon">✍️</div>
+                <h3>Content Agent</h3>
+                <p>Create Twitter/X threads, hooks, captions, newsletters, scripts, and content plans.</p>
+                <span class="card-action">Open SKILL.md →</span>
+            </a>
+
+            <a class="skill-card" href="https://github.com/ghostoftrade/Multi-Agent-Workflow/tree/main/skills/lead-generation-agent" target="_blank">
+                <div class="icon">🎯</div>
+                <h3>Lead Generation Agent</h3>
+                <p>Find prospects, score leads, create outreach messages, and prepare CRM-ready data.</p>
+                <span class="card-action">Open SKILL.md →</span>
+            </a>
+
+            <a class="skill-card" href="https://github.com/ghostoftrade/Multi-Agent-Workflow/tree/main/skills/customer-support-agent" target="_blank">
+                <div class="icon">💬</div>
+                <h3>Customer Support Agent</h3>
+                <p>Handle FAQs, support tickets, WhatsApp response flows, and customer message classification.</p>
+                <span class="card-action">Open SKILL.md →</span>
+            </a>
+
+            <a class="skill-card" href="https://github.com/ghostoftrade/Multi-Agent-Workflow/tree/main/skills/document-agent" target="_blank">
+                <div class="icon">📄</div>
+                <h3>Document Agent</h3>
+                <p>Summarize PDFs, extract key points, process documents, and generate structured reports.</p>
+                <span class="card-action">Open SKILL.md →</span>
+            </a>
+
+            <a class="skill-card" href="https://github.com/ghostoftrade/Multi-Agent-Workflow/tree/main/skills/workflow-automation-agent" target="_blank">
+                <div class="icon">⚙️</div>
+                <h3>Workflow Automation Agent</h3>
+                <p>Connect tools, APIs, dashboards, sheets, alerts, and automated business workflows.</p>
+                <span class="card-action">Open SKILL.md →</span>
+            </a>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="section" id="workflow">
+    <div class="container">
+
+        <div class="section-head">
+            <div class="kicker">How It Works</div>
+            <h2 class="section-title">Multi-Agent Workflow</h2>
+            <p class="section-desc">
+                AIZEN is designed as a workflow system where one router agent
+                understands the request, selects the right specialist skill,
+                and produces a structured output.
+            </p>
+        </div>
+
+        <div class="workflow">
+
+            <div class="agent">
+                <div class="agent-number">01</div>
+                <h3>Router Agent</h3>
+                <p>Reads the user request and selects the correct skill from the repository.</p>
+            </div>
+
+            <div class="agent">
+                <div class="agent-number">02</div>
+                <h3>Research Agent</h3>
+                <p>Collects context, asks for missing inputs, and prepares useful information.</p>
+            </div>
+
+            <div class="agent">
+                <div class="agent-number">03</div>
+                <h3>Execution Agent</h3>
+                <p>Runs the selected skill workflow and generates the required output.</p>
+            </div>
+
+            <div class="agent">
+                <div class="agent-number">04</div>
+                <h3>Report Agent</h3>
+                <p>Formats the final result into clear reports, summaries, plans, or actions.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<section class="section" id="structure">
+    <div class="container">
+
+        <div class="section-head">
+            <div class="kicker">Repository Structure</div>
+            <h2 class="section-title">Built Like a Skill Pack</h2>
+            <p class="section-desc">
+                The website is only the front page. The real value is inside the
+                <strong>skills</strong> folder where every agent skill has its own
+                <strong>SKILL.md</strong> file.
+            </p>
+        </div>
+
+        <div class="structure-box">
+<pre>Multi-Agent-Workflow/
+│
+├── README.md
+├── index.html
+│
+└── skills/
+    ├── aizen/
+    │   └── SKILL.md
+    │
+    ├── crypto-market-agent/
+    │   └── SKILL.md
+    │
+    ├── content-agent/
+    │   └── SKILL.md
+    │
+    ├── lead-generation-agent/
+    │   └── SKILL.md
+    │
+    ├── customer-support-agent/
+    │   └── SKILL.md
+    │
+    ├── document-agent/
+    │   └── SKILL.md
+    │
+    └── workflow-automation-agent/
+        └── SKILL.md</pre>
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div>— Build by Ghost of Sol</div>
+    <div>© 2026 Aizen Multi-Agent Workflow Skills</div>
+</footer>
+
+</body>
+</html>
